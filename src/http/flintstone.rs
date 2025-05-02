@@ -1,8 +1,12 @@
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum FlintstoneData {
     Get,
     Post(u64),
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FlintstoneRequest {
     pub data: FlintstoneData,
 }
@@ -20,6 +24,7 @@ impl FlintstoneRequest {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FlintstoneResponse {
     pub count: u64,
 }
