@@ -1,0 +1,1 @@
+a type library for the Ronald Fagen bot
