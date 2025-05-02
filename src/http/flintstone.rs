@@ -1,4 +1,4 @@
-enum FlintstoneData {
+pub enum FlintstoneData {
     Get,
     Post(u64),
 }
