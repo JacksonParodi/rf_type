@@ -12,7 +12,7 @@ use url::Url;
 
 use super::EndpointUrl;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ApiRequest {
     LogDonations(DonationsLogRequestOptions),
     Flintstone(FlintstoneRequestOptions),
