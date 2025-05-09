@@ -1,2 +1,2 @@
 mod response;
-pub use response::GetRandomObliqueStratResponsePayload;
+pub use response::RandomObliqueStratResponsePayload;
