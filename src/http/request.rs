@@ -8,7 +8,6 @@ use crate::{
     misc::constant,
 };
 use serde::{Deserialize, Serialize};
-use tracing::error;
 use url::Url;
 
 use super::EndpointUrl;
@@ -59,14 +58,14 @@ impl From<ApiRequest> for HttpRequest {
             // ApiRequest::Markov(options) => options.into(),
             ApiRequest::ProcessNewDonation => HttpRequest::new(
                 HttpMethod::GET,
-                Url::parse("https://example.com/process_new_donations").unwrap(),
-                vec![HttpHeader::ContentTypeJson],
+                EndpointUrl::ProcessNewDonations.as_url(),
+                vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
                 None,
             ),
             ApiRequest::RandomObliqueStrat => HttpRequest::new(
                 HttpMethod::GET,
-                Url::parse("https://example.com/random_oblique").unwrap(),
-                vec![HttpHeader::ContentTypeJson],
+                EndpointUrl::RandomObliqueStrat.as_url(),
+                vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
                 None,
             ),
         }
