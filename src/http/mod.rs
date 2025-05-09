@@ -1,1 +1,5 @@
-pub mod process_new_donation;
+mod response;
+pub use response::HttpResponse;
+
+mod payload;
+pub use payload::RfResponsePayload;

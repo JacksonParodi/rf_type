@@ -7,18 +7,18 @@ pub enum FlintstoneAction {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct FlintstoneRequest {
+pub struct FlintstoneRequestPayload {
     pub action: FlintstoneAction,
 }
 
-impl FlintstoneRequest {
+impl FlintstoneRequestPayload {
     pub fn get_current_count() -> Self {
-        FlintstoneRequest {
+        FlintstoneRequestPayload {
             action: FlintstoneAction::GetCurrentCount,
         }
     }
     pub fn increment_count() -> Self {
-        FlintstoneRequest {
+        FlintstoneRequestPayload {
             action: FlintstoneAction::IncrementCount,
         }
     }
