@@ -1,6 +1,5 @@
-use serde::de;
-use serde::ser::SerializeStruct;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use crate::misc::constant;
+use serde::{Deserialize, Deserializer, Serialize, Serializer, de, ser::SerializeStruct};
 use std::env;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -26,7 +25,7 @@ impl Serialize for HttpHeader {
                     serde::ser::Error::custom("JPCOM_API_KEY environment variable not set")
                 })?;
                 let mut state = serializer.serialize_struct("HttpHeader", 2)?;
-                state.serialize_field("name", "X-API-Key")?;
+                state.serialize_field("name", constant::X_API_HEADER)?;
                 state.serialize_field("value", &api_key)?;
                 state.end()
             }

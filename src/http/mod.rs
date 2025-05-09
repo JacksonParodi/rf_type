@@ -2,7 +2,7 @@ mod response;
 pub use response::{HttpResponse, ResponsePayload};
 
 mod request;
-pub use request::HttpRequest;
+pub use request::{ApiRequest, HttpRequest};
 
 mod header;
 pub use header::HttpHeader;
