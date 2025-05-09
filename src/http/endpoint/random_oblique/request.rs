@@ -1,6 +1,10 @@
-use serde::{Deserialize, Serialize};
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct GetRandomObliqueStratRequestPayload {
-    pub timestamp: u64,
-}
+// impl From<GetRandomObliqueStratRequest> for HttpRequest {
+//     fn from(_req: GetRandomObliqueStratRequest) -> Self {
+//         HttpRequest::new(
+//             HttpMethod::GET,
+//             EndpointUrl::ProcessNewDonations.as_url(),
+//             vec![HttpHeader::ContentTypeJson],
+//             None,
+//         )
+//     }
+// }

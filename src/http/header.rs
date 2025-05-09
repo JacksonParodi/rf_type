@@ -1,11 +1,12 @@
 use serde::de;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::env;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum HttpHeader {
     ContentTypeJson,
-    ApiKey(String),
+    ApiKey,
 }
 
 impl Serialize for HttpHeader {
@@ -15,17 +16,18 @@ impl Serialize for HttpHeader {
     {
         match self {
             HttpHeader::ContentTypeJson => {
-                // "Content-Type: application/json"
                 let mut state = serializer.serialize_struct("HttpHeader", 2)?;
                 state.serialize_field("name", "Content-Type")?;
                 state.serialize_field("value", "application/json")?;
                 state.end()
             }
-            HttpHeader::ApiKey(val) => {
-                // "X-API-Key: <val>"
+            HttpHeader::ApiKey => {
+                let api_key = env::var("JPCOM_API_KEY").map_err(|_| {
+                    serde::ser::Error::custom("JPCOM_API_KEY environment variable not set")
+                })?;
                 let mut state = serializer.serialize_struct("HttpHeader", 2)?;
                 state.serialize_field("name", "X-API-Key")?;
-                state.serialize_field("value", val)?;
+                state.serialize_field("value", &api_key)?;
                 state.end()
             }
         }
@@ -46,7 +48,7 @@ impl<'de> Deserialize<'de> for HttpHeader {
         let helper = HeaderHelper::deserialize(deserializer)?;
         match helper.name.as_str() {
             "Content-Type" if helper.value == "application/json" => Ok(HttpHeader::ContentTypeJson),
-            "X-API-Key" => Ok(HttpHeader::ApiKey(helper.value)),
+            "X-API-Key" => Ok(HttpHeader::ApiKey),
             _ => Err(de::Error::custom("Unknown header")),
         }
     }
