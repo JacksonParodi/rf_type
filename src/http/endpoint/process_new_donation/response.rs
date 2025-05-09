@@ -1,4 +1,4 @@
-use crate::donation::Donation;
+use crate::types::donation::Donation;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 

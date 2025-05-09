@@ -1,4 +1,3 @@
-pub mod donation;
-pub mod endpoint;
 pub mod http;
-pub mod user;
+pub mod misc;
+pub mod types;
