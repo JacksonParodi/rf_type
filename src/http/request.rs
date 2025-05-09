@@ -17,7 +17,7 @@ pub enum ApiRequest {
     LogDonations(DonationsLogRequestOptions),
     Flintstone(FlintstoneRequestOptions),
     // Markov(MarkovRequestOptions),
-    ProcessNewDonation,
+    ProcessNewDonations,
     RandomObliqueStrat,
 }
 
@@ -56,7 +56,7 @@ impl From<ApiRequest> for HttpRequest {
                 )
             }
             // ApiRequest::Markov(options) => options.into(),
-            ApiRequest::ProcessNewDonation => HttpRequest::new(
+            ApiRequest::ProcessNewDonations => HttpRequest::new(
                 HttpMethod::GET,
                 EndpointUrl::ProcessNewDonations.as_url(),
                 vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],

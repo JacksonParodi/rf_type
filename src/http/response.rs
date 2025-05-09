@@ -11,7 +11,7 @@ pub enum ResponsePayload {
     None,
     Flintstone(FlintstoneResponsePayload),
     // Markov(MarkovResponsePayload),
-    ProcessNewDonation(ProcessNewDonationsResponsePayload),
+    ProcessNewDonations(ProcessNewDonationsResponsePayload),
     RandomObliqueStrat(GetRandomObliqueStratResponsePayload),
 }
 
