@@ -8,6 +8,20 @@ pub enum HttpHeader {
     ApiKey,
 }
 
+impl HttpHeader {
+    pub fn as_tuple(&self) -> Result<(String, String), std::env::VarError> {
+        match self {
+            HttpHeader::ContentTypeJson => {
+                Ok(("Content-Type".to_string(), "application/json".to_string()))
+            }
+            HttpHeader::ApiKey => {
+                let api_key = env::var("JPCOM_API_KEY")?;
+                Ok((constant::X_API_HEADER.to_string(), api_key))
+            }
+        }
+    }
+}
+
 impl Serialize for HttpHeader {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
