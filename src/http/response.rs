@@ -18,22 +18,6 @@ pub enum ResponsePayload {
     RandomObliqueStrat(RandomObliqueStratResponsePayload),
 }
 
-// impl From<Value> for ResponsePayload {
-//     fn from(value: Value) -> Self {
-//         match serde_json::from_value(value.clone()) {
-//             Ok(payload) => payload,
-//             Err(e) => {
-//                 tracing::error!(
-//                     "{:?} ResponsePayload: Invalid value type: {:?}",
-//                     e,
-//                     value.clone()
-//                 );
-//                 ResponsePayload::None
-//             }
-//         }
-//     }
-// }
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct HttpResponse {
     pub code: u16,

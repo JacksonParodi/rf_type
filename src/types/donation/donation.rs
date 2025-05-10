@@ -87,7 +87,7 @@ impl From<Value> for DonationMap {
             Value::Object(map) => {
                 let mut hash_map = HashMap::new();
                 for (key, value) in map {
-                    let donation: Donation = value.into();
+                    let donation = Donation::from(value);
                     match donation.is_valid() {
                         true => {
                             error!("DonationMap: Invalid donation: {:?}", donation);
