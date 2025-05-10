@@ -53,7 +53,41 @@ impl Default for Donation {
 impl From<Value> for Donation {
     fn from(value: Value) -> Self {
         match value {
-            Value::Object(map) => serde_json::from_value(Value::Object(map)).unwrap_or_default(),
+            Value::Object(map) => {
+                let id = map
+                    .get("id")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+
+                let donor_name = map
+                    .get("name")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+
+                let donor_message = map
+                    .get("message")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+
+                let amount = map.get("amount").and_then(Value::as_f64).unwrap_or(0.0);
+
+                let currency = map
+                    .get("currency")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+
+                let date = map
+                    .get("timestamp")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string();
+
+                Donation::new(id, donor_name, donor_message, amount, currency, date)
+            }
             _ => {
                 error!("Donation: Invalid value type: {}", value);
                 Donation::default()
@@ -86,14 +120,15 @@ impl From<Value> for DonationMap {
         match value {
             Value::Object(map) => {
                 let mut hash_map = HashMap::new();
+
                 for (key, value) in map {
                     let donation = Donation::from(value);
                     match donation.is_valid() {
                         true => {
-                            error!("DonationMap: Invalid donation: {:?}", donation);
+                            hash_map.insert(key, donation);
                         }
                         false => {
-                            hash_map.insert(key, donation);
+                            error!("DonationMap: Invalid donation: {:?}", donation);
                         }
                     }
                 }
