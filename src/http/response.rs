@@ -5,12 +5,14 @@ use crate::http::endpoint::{
     random_oblique::RandomObliqueStratResponsePayload,
 };
 use serde::{Deserialize, Serialize};
+
+use super::endpoint::log_donations::LogDonationsResponsePayload;
 // use serde_json::Value;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ResponsePayload {
-    None,
     Flintstone(FlintstoneResponsePayload),
+    LogDonations(LogDonationsResponsePayload),
     // Markov(MarkovResponsePayload),
     ProcessNewDonations(ProcessNewDonationsResponsePayload),
     RandomObliqueStrat(RandomObliqueStratResponsePayload),

@@ -2,23 +2,90 @@ use crate::{
     http::{
         HttpHeader, HttpMethod, RequestPayload,
         endpoint::{
-            flintstone::FlintstoneRequestOptions, log_donations::DonationsLogRequestOptions,
+            flintstone::{FlintstoneRequestOptions, FlintstoneResponsePayload},
+            log_donations::{DonationsLogRequestOptions, LogDonationsResponsePayload},
+            process_new_donations::ProcessNewDonationsResponsePayload,
+            random_oblique::RandomObliqueStratResponsePayload,
         },
     },
     misc::constant,
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use tracing::error;
 use url::Url;
 
-use super::EndpointUrl;
+use super::{EndpointUrl, ResponsePayload};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ApiRequest {
-    LogDonations(DonationsLogRequestOptions),
     Flintstone(FlintstoneRequestOptions),
+    LogDonations(DonationsLogRequestOptions),
     // Markov(MarkovRequestOptions),
     ProcessNewDonations,
     RandomObliqueStrat,
+}
+
+impl ApiRequest {
+    pub fn parse_response_payload(&self, data_value: Value) -> ResponsePayload {
+        match self {
+            ApiRequest::Flintstone(_) => {
+                let payload: FlintstoneResponsePayload = match serde_json::from_value(data_value) {
+                    Ok(payload) => payload,
+                    Err(e) => {
+                        error!("FlintstoneResponsePayload: Invalid value type: {:?}", e);
+                        return ResponsePayload::Flintstone(FlintstoneResponsePayload::default());
+                    }
+                };
+                ResponsePayload::Flintstone(payload)
+            }
+            ApiRequest::LogDonations(_) => {
+                let payload: LogDonationsResponsePayload = match serde_json::from_value(data_value)
+                {
+                    Ok(payload) => payload,
+                    Err(e) => {
+                        error!("LogDonationsResponsePayload: Invalid value type: {:?}", e);
+                        return ResponsePayload::LogDonations(
+                            LogDonationsResponsePayload::default(),
+                        );
+                    }
+                };
+                ResponsePayload::LogDonations(payload)
+            }
+            ApiRequest::ProcessNewDonations => {
+                let payload: ProcessNewDonationsResponsePayload =
+                    match serde_json::from_value(data_value) {
+                        Ok(payload) => payload,
+                        Err(e) => {
+                            error!(
+                                "ProcessNewDonationsResponsePayload: Invalid value type: {:?}",
+                                e
+                            );
+                            return ResponsePayload::ProcessNewDonations(
+                                ProcessNewDonationsResponsePayload::default(),
+                            );
+                        }
+                    };
+                ResponsePayload::ProcessNewDonations(payload)
+            }
+            ApiRequest::RandomObliqueStrat => {
+                let payload: RandomObliqueStratResponsePayload =
+                    match serde_json::from_value(data_value) {
+                        Ok(payload) => payload,
+                        Err(e) => {
+                            error!(
+                                "RandomObliqueStratResponsePayload: Invalid value type: {:?}",
+                                e
+                            );
+                            return ResponsePayload::RandomObliqueStrat(
+                                RandomObliqueStratResponsePayload::default(),
+                            );
+                        }
+                    };
+                ResponsePayload::RandomObliqueStrat(payload)
+            }
+        }
+    }
 }
 
 impl From<ApiRequest> for HttpRequest {
