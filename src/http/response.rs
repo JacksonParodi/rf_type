@@ -5,6 +5,7 @@ use crate::http::endpoint::{
     random_oblique::RandomObliqueStratResponsePayload,
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ResponsePayload {
@@ -13,6 +14,22 @@ pub enum ResponsePayload {
     // Markov(MarkovResponsePayload),
     ProcessNewDonations(ProcessNewDonationsResponsePayload),
     RandomObliqueStrat(RandomObliqueStratResponsePayload),
+}
+
+impl From<Value> for ResponsePayload {
+    fn from(value: Value) -> Self {
+        match serde_json::from_value(value.clone()) {
+            Ok(payload) => payload,
+            Err(e) => {
+                tracing::error!(
+                    "{:?} ResponsePayload: Invalid value type: {:?}",
+                    e,
+                    value.clone()
+                );
+                ResponsePayload::None
+            }
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
