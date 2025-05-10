@@ -24,12 +24,8 @@ impl Default for LogDonationsResponsePayload {
 
 impl From<Value> for LogDonationsResponsePayload {
     fn from(value: Value) -> Self {
-        match value {
-            Value::Object(map) => {
-                let new_donations: DonationMap =
-                    serde_json::from_value(Value::Object(map)).unwrap_or_default();
-                LogDonationsResponsePayload::new(new_donations)
-            }
+        match value.clone() {
+            Value::Object(_map) => LogDonationsResponsePayload::new(DonationMap::from(value)),
             _ => {
                 error!("LogDonationsResponsePayload: Invalid value type: {}", value);
                 LogDonationsResponsePayload::default()

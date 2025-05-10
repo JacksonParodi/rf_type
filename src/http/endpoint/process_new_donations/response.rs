@@ -25,11 +25,9 @@ impl Default for ProcessNewDonationsResponsePayload {
 
 impl From<Value> for ProcessNewDonationsResponsePayload {
     fn from(value: Value) -> Self {
-        match value {
-            Value::Object(map) => {
-                let new_donations: DonationMap =
-                    serde_json::from_value(Value::Object(map)).unwrap_or_default();
-                ProcessNewDonationsResponsePayload::new(new_donations)
+        match value.clone() {
+            Value::Object(_map) => {
+                ProcessNewDonationsResponsePayload::new(DonationMap::from(value))
             }
             _ => {
                 error!(
