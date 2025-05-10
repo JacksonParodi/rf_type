@@ -72,7 +72,11 @@ impl From<Value> for Donation {
                     .unwrap_or_default()
                     .to_string();
 
-                let amount = map.get("amount").and_then(Value::as_f64).unwrap_or(0.0);
+                let amount = map
+                    .get("amount")
+                    .and_then(Value::as_str)
+                    .and_then(|s| s.parse::<f64>().ok())
+                    .unwrap_or(0.0);
 
                 let currency = map
                     .get("currency")
