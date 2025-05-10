@@ -14,3 +14,26 @@ impl RandomObliqueStratResponsePayload {
 }
 
 // continue with default, and From<Value> implementations
+
+impl Default for RandomObliqueStratResponsePayload {
+    fn default() -> Self {
+        RandomObliqueStratResponsePayload {
+            oblique_strat: String::new(),
+        }
+    }
+}
+
+impl From<Value> for RandomObliqueStratResponsePayload {
+    fn from(value: Value) -> Self {
+        match value {
+            Value::String(oblique_strat) => RandomObliqueStratResponsePayload::new(oblique_strat),
+            _ => {
+                error!(
+                    "Invalid value type for RandomObliqueStratResponsePayload: {:?}",
+                    value
+                );
+                RandomObliqueStratResponsePayload::default()
+            }
+        }
+    }
+}
