@@ -11,3 +11,5 @@ pub const JPCOM_API_BASE_URL: &str = "https://www.jacksonparodi.com/php/api/";
 
 pub const FLINTSTONES_DEFAULT_COUNT: u64 = 455;
 pub const OBLIQUE_STRAT_DEFAULT: &str = "Use an default colour";
+
+pub const OVERLAY_SERVER_PORT: u16 = 8085;
