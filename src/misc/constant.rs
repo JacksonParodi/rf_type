@@ -13,3 +13,4 @@ pub const FLINTSTONES_DEFAULT_COUNT: u64 = 455;
 pub const OBLIQUE_STRAT_DEFAULT: &str = "Use an default colour";
 
 pub const OVERLAY_SERVER_PORT: u16 = 8085;
+pub const LOCALHOST_URL: &str = "127.0.0.1";
