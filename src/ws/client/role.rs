@@ -22,4 +22,22 @@ impl Role {
 
         result_bytes
     }
+
+    pub fn from_bytes(bytes: &[u8]) -> Option<Role> {
+        if bytes.len() != 5 {
+            return None;
+        }
+
+        if bytes[0..3] != constant::ROLE_HEADER_BYTES {
+            return None;
+        }
+
+        let role_bytes: [u8; 2] = [bytes[3], bytes[4]];
+        match role_bytes {
+            constant::ROLE_TWITCH_BOT_BYTES => Some(Role::TwitchBot),
+            constant::ROLE_DISCORD_BOT_BYTES => Some(Role::DiscordBot),
+            constant::ROLE_OVERLAY_BYTES => Some(Role::Overlay),
+            _ => None,
+        }
+    }
 }
