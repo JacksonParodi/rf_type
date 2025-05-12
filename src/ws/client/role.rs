@@ -1,7 +1,7 @@
 use crate::misc::constant;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, PartialEq)]
 pub enum Role {
     TwitchBot,
     DiscordBot,
