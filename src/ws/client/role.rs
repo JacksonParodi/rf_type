@@ -1,7 +1,8 @@
-use crate::ws::client::Role;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct IdentifyMessage {
-    pub role: Role,
+pub enum Role {
+    TwitchBot,
+    DiscordBot,
+    Overlay,
 }
