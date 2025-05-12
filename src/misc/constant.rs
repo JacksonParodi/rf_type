@@ -14,3 +14,8 @@ pub const OBLIQUE_STRAT_DEFAULT: &str = "Use an default colour";
 
 pub const OVERLAY_SERVER_PORT: u16 = 8085;
 pub const LOCALHOST_URL: &str = "127.0.0.1";
+
+pub const ROLE_HEADER_BYTES: [u8; 3] = [0x00, 0x52, 0x4C];
+pub const ROLE_OVERLAY_BYTES: [u8; 2] = [0x00, 0x01];
+pub const ROLE_TWITCH_BOT_BYTES: [u8; 2] = [0x01, 0x01];
+pub const ROLE_DISCORD_BOT_BYTES: [u8; 2] = [0x01, 0x02];
