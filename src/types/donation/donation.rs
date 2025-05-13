@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use tracing::error;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Donation {
+pub struct DonationData {
     pub id: String,
     pub donor_name: String,
     pub donor_message: String,
@@ -13,7 +13,7 @@ pub struct Donation {
     pub date: String,
 }
 
-impl Donation {
+impl DonationData {
     pub fn new(
         id: String,
         donor_name: String,
@@ -22,7 +22,7 @@ impl Donation {
         currency: String,
         date: String,
     ) -> Self {
-        Donation {
+        DonationData {
             id,
             donor_name,
             donor_message,
@@ -37,9 +37,9 @@ impl Donation {
     }
 }
 
-impl Default for Donation {
+impl Default for DonationData {
     fn default() -> Self {
-        Donation {
+        DonationData {
             id: String::new(),
             donor_name: String::new(),
             donor_message: String::new(),
@@ -50,7 +50,7 @@ impl Default for Donation {
     }
 }
 
-impl From<Value> for Donation {
+impl From<Value> for DonationData {
     fn from(value: Value) -> Self {
         match value {
             Value::Object(map) => {
@@ -90,11 +90,11 @@ impl From<Value> for Donation {
                     .unwrap_or_default()
                     .to_string();
 
-                Donation::new(id, donor_name, donor_message, amount, currency, date)
+                DonationData::new(id, donor_name, donor_message, amount, currency, date)
             }
             _ => {
                 error!("Donation: Invalid value type: {}", value);
-                Donation::default()
+                DonationData::default()
             }
         }
     }
@@ -102,11 +102,11 @@ impl From<Value> for Donation {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DonationMap {
-    pub donations: HashMap<String, Donation>,
+    pub donations: HashMap<String, DonationData>,
 }
 
 impl DonationMap {
-    pub fn new(donations: HashMap<String, Donation>) -> Self {
+    pub fn new(donations: HashMap<String, DonationData>) -> Self {
         DonationMap { donations }
     }
 }
@@ -126,7 +126,7 @@ impl From<Value> for DonationMap {
                 let mut hash_map = HashMap::new();
 
                 for (key, value) in map {
-                    let donation = Donation::from(value);
+                    let donation = DonationData::from(value);
                     match donation.is_valid() {
                         true => {
                             hash_map.insert(key, donation);

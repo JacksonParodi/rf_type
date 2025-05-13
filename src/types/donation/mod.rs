@@ -1,2 +1,2 @@
 mod donation;
-pub use donation::{Donation, DonationMap};
+pub use donation::{DonationData, DonationMap};
