@@ -47,6 +47,7 @@ impl ManifestEntry {
 
     pub fn find_item(&self, file_name: &str) -> Option<PathBuf> {
         let mut result = None;
+
         if self.path.file_name()?.to_str()? == file_name {
             result = Some(self.path.clone());
         }
@@ -57,6 +58,8 @@ impl ManifestEntry {
                 }
             }
         }
+
+        debug!("find_item before path trimming: {:?}", result);
 
         match result {
             Some(path) => {
