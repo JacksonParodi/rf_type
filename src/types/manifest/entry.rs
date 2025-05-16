@@ -1,6 +1,9 @@
 use crate::error::RfError;
 use serde::{Deserialize, Serialize};
-use std::{fs, path::PathBuf};
+use std::{
+    fs,
+    path::{self, Path, PathBuf},
+};
 use tracing::{debug, warn};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -59,5 +62,20 @@ impl ManifestEntry {
             }
         }
         result
+    }
+
+    pub fn trimmed_path(&self) -> PathBuf {
+        let mut rel_path = PathBuf::new();
+        let mut seen_asset = false;
+
+        for path_component in self.path.components() {
+            if seen_asset {
+                rel_path.push(path_component);
+            }
+            if path_component.as_os_str() == "asset" {
+                seen_asset = true;
+            }
+        }
+        rel_path
     }
 }
