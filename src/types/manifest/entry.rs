@@ -1,7 +1,7 @@
 use crate::error::RfError;
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
-use tracing::warn;
+use tracing::{debug, warn};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ManifestEntry {
@@ -60,13 +60,13 @@ impl ManifestEntry {
 
         match result {
             Some(path) => {
-                // Some(path)
                 let mut seen_asset = false;
-                let mut after_asset = Vec::new();
+                let mut rel_path = PathBuf::new();
 
                 for comp in path.components() {
                     if seen_asset {
-                        after_asset.push(comp.as_os_str());
+                        // after_asset.push(comp.as_os_str());
+                        rel_path.push(comp);
                     } else if comp
                         .as_os_str()
                         .to_string_lossy()
@@ -76,13 +76,14 @@ impl ManifestEntry {
                     }
                 }
 
+                debug!("seen asset frag?: {:?}", seen_asset);
+                debug!("relative path: {:?}", rel_path);
+
                 if !seen_asset {
                     warn!("Asset not found in path: {:?}", path);
                     return None;
                 }
-
-                let relative_path = after_asset.iter().collect();
-                Some(relative_path)
+                Some(rel_path)
             }
             None => None,
         }
