@@ -3,6 +3,7 @@ use tracing::warn;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AlertData {
+    pub id: String,
     pub text: Option<String>,
     pub image: Option<String>,
     pub sound: Option<String>,
@@ -17,6 +18,7 @@ impl AlertData {
         video: Option<String>,
     ) -> Self {
         let mut new_alert = Self {
+            id: uuid::Uuid::new_v4().to_string(),
             text,
             image,
             sound,
