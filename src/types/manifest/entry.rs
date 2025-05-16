@@ -60,29 +60,29 @@ impl ManifestEntry {
 
         match result {
             Some(path) => {
-                Some(path)
-                // let mut seen_asset = false;
-                // let mut after_asset = Vec::new();
+                // Some(path)
+                let mut seen_asset = false;
+                let mut after_asset = Vec::new();
 
-                // for comp in path.components() {
-                //     if seen_asset {
-                //         after_asset.push(comp.as_os_str());
-                //     } else if comp
-                //         .as_os_str()
-                //         .to_string_lossy()
-                //         .eq_ignore_ascii_case("asset")
-                //     {
-                //         seen_asset = true;
-                //     }
-                // }
+                for comp in path.components() {
+                    if seen_asset {
+                        after_asset.push(comp.as_os_str());
+                    } else if comp
+                        .as_os_str()
+                        .to_string_lossy()
+                        .eq_ignore_ascii_case("asset")
+                    {
+                        seen_asset = true;
+                    }
+                }
 
-                // if !seen_asset {
-                //     warn!("Asset not found in path: {:?}", path);
-                //     return None;
-                // }
+                if !seen_asset {
+                    warn!("Asset not found in path: {:?}", path);
+                    return None;
+                }
 
-                // let relative_path = after_asset.iter().collect();
-                // Some(relative_path)
+                let relative_path = after_asset.iter().collect();
+                Some(relative_path)
             }
             None => None,
         }
