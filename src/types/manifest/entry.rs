@@ -58,37 +58,6 @@ impl ManifestEntry {
                 }
             }
         }
-
-        debug!("find_item before path trimming: {:?}", result);
-
-        match result {
-            Some(path) => {
-                let mut seen_asset = false;
-                let mut rel_path = PathBuf::new();
-
-                for comp in path.components() {
-                    if seen_asset {
-                        // after_asset.push(comp.as_os_str());
-                        rel_path.push(comp);
-                    } else if comp
-                        .as_os_str()
-                        .to_string_lossy()
-                        .eq_ignore_ascii_case("asset")
-                    {
-                        seen_asset = true;
-                    }
-                }
-
-                debug!("seen asset frag?: {:?}", seen_asset);
-                debug!("relative path: {:?}", rel_path);
-
-                if !seen_asset {
-                    warn!("Asset not found in path: {:?}", path);
-                    return None;
-                }
-                Some(rel_path)
-            }
-            None => None,
-        }
+        result
     }
 }
