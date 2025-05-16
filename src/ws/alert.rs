@@ -16,14 +16,27 @@ impl AlertData {
         sound: Option<String>,
         video: Option<String>,
     ) -> Self {
-        if text.is_none() && image.is_none() && sound.is_none() && video.is_none() {
-            warn!("AlertData created with all fields None");
-        }
-        Self {
+        let mut new_alert = Self {
             text,
             image,
             sound,
             video,
+        };
+
+        if new_alert.text.is_none()
+            && new_alert.image.is_none()
+            && new_alert.sound.is_none()
+            && new_alert.video.is_none()
+        {
+            warn!("AlertData created with all fields None");
         }
+
+        if new_alert.video.is_some() && (new_alert.sound.is_some() || new_alert.image.is_some()) {
+            warn!("AlertData created with video and other media types, removing other media types");
+            new_alert.sound = None;
+            new_alert.image = None;
+        }
+
+        new_alert
     }
 }
