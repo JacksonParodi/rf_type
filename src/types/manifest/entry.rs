@@ -4,12 +4,12 @@ use std::{fs, path::PathBuf};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ManifestEntry {
-    path: String,
+    path: PathBuf,
     is_dir: bool,
     children: Option<Vec<ManifestEntry>>,
 }
 impl ManifestEntry {
-    pub fn new(path: String, is_dir: bool) -> Self {
+    pub fn new(path: PathBuf, is_dir: bool) -> Self {
         ManifestEntry {
             path,
             is_dir,
@@ -31,7 +31,7 @@ impl ManifestEntry {
                 None
             };
             Ok(ManifestEntry {
-                path: path.to_string_lossy().to_string(),
+                path: path.clone(),
                 is_dir: metadata.is_dir(),
                 children,
             })
