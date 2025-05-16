@@ -1,10 +1,7 @@
 use crate::error::RfError;
 use serde::{Deserialize, Serialize};
-use std::{
-    fs,
-    path::{self, Path, PathBuf},
-};
-use tracing::{debug, warn};
+use std::{fs, path::PathBuf};
+use tracing::warn;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ManifestEntry {
@@ -76,6 +73,11 @@ impl ManifestEntry {
                 seen_asset = true;
             }
         }
+
+        if rel_path.components().count() == 0 {
+            warn!("No asset directory found in path: {:?}", rel_path);
+        }
+
         rel_path
     }
 }
