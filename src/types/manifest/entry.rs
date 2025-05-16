@@ -48,16 +48,16 @@ impl ManifestEntry {
         }
     }
 
-    pub fn find_item(&self, file_name: &str) -> Option<PathBuf> {
+    pub fn find_item(&self, file_name: &str) -> Option<Self> {
         let mut result = None;
 
         if self.path.file_name()?.to_str()? == file_name {
-            result = Some(self.path.clone());
+            result = Some(self.to_owned());
         }
         if let Some(children) = &self.children {
             for child in children {
-                if let Some(path) = child.find_item(file_name) {
-                    result = Some(path);
+                if let Some(entry) = child.find_item(file_name) {
+                    result = Some(entry);
                 }
             }
         }
