@@ -1,4 +1,4 @@
-use crate::ws::server::role::RoleData;
+use crate::ws::role::RoleData;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]

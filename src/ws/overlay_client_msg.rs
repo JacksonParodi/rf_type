@@ -1,4 +1,4 @@
-use crate::ws::client::{AlertData, ChatData};
+use crate::ws::{AlertData, ChatData};
 
 use serde::{Deserialize, Serialize};
 

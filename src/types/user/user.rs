@@ -1,4 +1,6 @@
+use crate::types::user::inventory::InventoryItem;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct User {
@@ -8,5 +10,5 @@ pub struct User {
     pub discord_id: Option<String>,
     pub discord_name: Option<String>,
     pub piasters: u64,
-    pub inventory: Vec<String>,
+    pub inventory: HashMap<String, InventoryItem>,
 }
