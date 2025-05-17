@@ -39,7 +39,9 @@ impl DonationData {
     pub fn to_display_string(&self) -> String {
         format!(
             "{} tipped {} {}",
-            self.donor_name, self.amount, self.currency
+            self.donor_name,
+            format!("{:.2}", self.amount),
+            self.currency
         )
     }
 }
