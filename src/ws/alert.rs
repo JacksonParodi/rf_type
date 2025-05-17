@@ -1,21 +1,22 @@
 use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
 use tracing::warn;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct AlertData {
     pub id: String,
     pub text: Option<String>,
-    pub image: Option<String>,
-    pub sound: Option<String>,
-    pub video: Option<String>,
+    pub image: Option<PathBuf>,
+    pub sound: Option<PathBuf>,
+    pub video: Option<PathBuf>,
 }
 
 impl AlertData {
     pub fn new(
         text: Option<String>,
-        image: Option<String>,
-        sound: Option<String>,
-        video: Option<String>,
+        image: Option<PathBuf>,
+        sound: Option<PathBuf>,
+        video: Option<PathBuf>,
     ) -> Self {
         let mut new_alert = Self {
             id: uuid::Uuid::new_v4().to_string(),
