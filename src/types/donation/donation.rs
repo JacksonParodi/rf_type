@@ -35,6 +35,13 @@ impl DonationData {
     pub fn is_valid(&self) -> bool {
         !self.id.is_empty() && !self.donor_name.is_empty() && self.amount > 0.0
     }
+
+    pub fn to_display_string(&self) -> String {
+        format!(
+            "{} tipped {} {}",
+            self.donor_name, self.amount, self.currency
+        )
+    }
 }
 
 impl Default for DonationData {
