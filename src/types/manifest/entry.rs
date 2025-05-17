@@ -1,4 +1,5 @@
 use crate::error::RfError;
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::{fs, path::PathBuf};
 use tracing::warn;
@@ -65,6 +66,39 @@ impl ManifestEntry {
             }
         }
         result
+    }
+
+    fn get_all_files_from_dir(&self, dir: &str) -> Vec<Self> {
+        let mut files = Vec::new();
+
+        if let Some(children) = &self.children {
+            for child in children {
+                if child.is_dir && child.path.file_name().unwrap().to_str().unwrap() == dir {
+                    if let Some(child_files) = &child.children {
+                        for file in child_files {
+                            if !file.is_dir {
+                                files.push(file.clone());
+                            }
+                        }
+                    }
+                } else if child.is_dir {
+                    files.extend(child.get_all_files_from_dir(dir));
+                }
+            }
+        }
+
+        files
+    }
+
+    pub fn random_file_from_dir(&self, dir: &str) -> Option<Self> {
+        let files = self.get_all_files_from_dir(dir);
+        if files.is_empty() {
+            None
+        } else {
+            let mut rng = rand::rng();
+            let random_index = rng.random_range(0..files.len());
+            Some(files[random_index].clone())
+        }
     }
 
     pub fn find_file(&self, file_name: &str) -> Option<Self> {
