@@ -45,7 +45,7 @@ impl ManifestEntry {
         }
     }
 
-    pub fn find_item(&self, file_name: &str) -> Option<Self> {
+    fn find_item(&self, file_name: &str, looking_for_dir: bool) -> Option<Self> {
         let mut result = None;
 
         if self.path.file_name()?.to_str()? == file_name {
@@ -53,12 +53,26 @@ impl ManifestEntry {
         }
         if let Some(children) = &self.children {
             for child in children {
-                if let Some(entry) = child.find_item(file_name) {
+                if let Some(entry) = child.find_item(file_name, looking_for_dir) {
+                    if looking_for_dir && !entry.is_dir {
+                        continue;
+                    }
+                    if !looking_for_dir && entry.is_dir {
+                        continue;
+                    }
                     result = Some(entry);
                 }
             }
         }
         result
+    }
+
+    pub fn find_file(&self, file_name: &str) -> Option<Self> {
+        self.find_item(file_name, false)
+    }
+
+    pub fn find_dir(&self, dir_name: &str) -> Option<Self> {
+        self.find_item(dir_name, true)
     }
 
     pub fn trimmed_path(&self) -> PathBuf {

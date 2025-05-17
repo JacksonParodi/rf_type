@@ -41,4 +41,8 @@ impl AlertData {
 
         new_alert
     }
+
+    pub fn dummy() -> Self {
+        Self::new(Some("Random alert text".to_string()), None, None, None)
+    }
 }
