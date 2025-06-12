@@ -1,7 +1,7 @@
 pub const DONATIONS_LOG_BASE_ENDPOINT: &str = "log_donations.php";
 pub const DONATIONS_PROCESS_NEW_ENDPOINT: &str = "process_new_donations.php";
 pub const FLINTSTONE_BASE_ENDPOINT: &str = "flintstone.php";
-pub const MARKOV_ENDPOINT: &str = "todo!";
+pub const MARKOV_ENDPOINT: &str = "markov.php";
 pub const RANDOM_OBLIQUE_STRAT_ENDPOINT: &str = "random_oblique_strat.php";
 
 pub const X_API_HEADER: &str = "X-Api-Key";

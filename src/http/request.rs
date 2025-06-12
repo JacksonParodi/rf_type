@@ -4,6 +4,7 @@ use crate::{
         endpoint::{
             flintstone::{FlintstoneRequestOptions, FlintstoneResponsePayload},
             log_donations::{DonationsLogRequestOptions, LogDonationsResponsePayload},
+            markov::{MarkovRequestParams, MarkovResponsePayload},
             process_new_donations::ProcessNewDonationsResponsePayload,
             random_oblique::RandomObliqueStratResponsePayload,
         },
@@ -20,7 +21,7 @@ use super::{EndpointUrl, ResponsePayload};
 pub enum ApiRequest {
     Flintstone(FlintstoneRequestOptions),
     LogDonations(DonationsLogRequestOptions),
-    // Markov(MarkovRequestOptions),
+    Markov(MarkovRequestParams),
     ProcessNewDonations,
     RandomObliqueStrat,
 }
@@ -33,6 +34,9 @@ impl ApiRequest {
             }
             ApiRequest::LogDonations(_) => {
                 ResponsePayload::LogDonations(LogDonationsResponsePayload::from(data_value))
+            }
+            ApiRequest::Markov(_) => {
+                ResponsePayload::Markov(MarkovResponsePayload::from(data_value))
             }
             ApiRequest::ProcessNewDonations => ResponsePayload::ProcessNewDonations(
                 ProcessNewDonationsResponsePayload::from(data_value),
@@ -78,7 +82,20 @@ impl From<ApiRequest> for HttpRequest {
                     None,
                 )
             }
-            // ApiRequest::Markov(options) => options.into(),
+            ApiRequest::Markov(options) => {
+                let mut url = EndpointUrl::Markov.as_url();
+
+                if let Some(seed) = options.seed {
+                    url.set_query(Some(&format!("seed={}", seed)));
+                }
+
+                HttpRequest::new(
+                    HttpMethod::GET,
+                    url,
+                    vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
+                    None,
+                )
+            }
             ApiRequest::ProcessNewDonations => HttpRequest::new(
                 HttpMethod::GET,
                 EndpointUrl::ProcessNewDonations.as_url(),

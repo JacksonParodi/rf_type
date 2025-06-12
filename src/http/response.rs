@@ -1,6 +1,5 @@
 use crate::http::endpoint::{
-    flintstone::FlintstoneResponsePayload,
-    //markov::MarkovResponsePayload,
+    flintstone::FlintstoneResponsePayload, markov::MarkovResponsePayload,
     process_new_donations::ProcessNewDonationsResponsePayload,
     random_oblique::RandomObliqueStratResponsePayload,
 };
@@ -13,7 +12,7 @@ use super::endpoint::log_donations::LogDonationsResponsePayload;
 pub enum ResponsePayload {
     Flintstone(FlintstoneResponsePayload),
     LogDonations(LogDonationsResponsePayload),
-    // Markov(MarkovResponsePayload),
+    Markov(MarkovResponsePayload),
     ProcessNewDonations(ProcessNewDonationsResponsePayload),
     RandomObliqueStrat(RandomObliqueStratResponsePayload),
 }

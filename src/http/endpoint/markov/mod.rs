@@ -1,7 +1,5 @@
-// todo!
+mod request;
+pub use request::MarkovRequestParams;
 
-// mod request;
-// pub use request::MarkovRequestPayload;
-
-// mod response;
-// pub use response::MarkovResponsePayload;
+mod response;
+pub use response::MarkovResponsePayload;
