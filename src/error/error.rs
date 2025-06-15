@@ -8,6 +8,7 @@ pub enum RfError {
     SerenityError(String),
     DotenvyError(String),
     ReqwestError(String),
+    TomlError(String),
     Other(String),
 }
 
@@ -20,6 +21,7 @@ impl std::fmt::Display for RfError {
             RfError::SerenityError(err) => write!(f, "Serenity Error: {}", err),
             RfError::DotenvyError(err) => write!(f, "Dotenvy Error: {}", err),
             RfError::ReqwestError(err) => write!(f, "Reqwest Error: {}", err),
+            RfError::TomlError(err) => write!(f, "TOML Error: {}", err),
             RfError::Other(msg) => write!(f, "Other Error: {}", msg),
         }
     }
@@ -48,5 +50,17 @@ impl From<dotenvy::Error> for RfError {
 impl From<reqwest::Error> for RfError {
     fn from(err: reqwest::Error) -> RfError {
         RfError::ReqwestError(err.to_string())
+    }
+}
+
+impl From<toml::ser::Error> for RfError {
+    fn from(err: toml::ser::Error) -> RfError {
+        RfError::TomlError(err.to_string())
+    }
+}
+
+impl From<toml::de::Error> for RfError {
+    fn from(err: toml::de::Error) -> RfError {
+        RfError::TomlError(err.to_string())
     }
 }
