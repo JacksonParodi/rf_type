@@ -36,10 +36,16 @@ pub struct ChatData {
     pub name: String,
     pub text: String,
     pub color: ChatColor,
+    pub tts: bool,
 }
 
 impl ChatData {
-    pub fn new(name: String, text: String, color: ChatColor) -> Self {
-        Self { name, text, color }
+    pub fn new(name: String, text: String, color: ChatColor, tts: bool) -> Self {
+        Self {
+            name,
+            text,
+            color,
+            tts,
+        }
     }
 }
