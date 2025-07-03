@@ -1,46 +1,44 @@
-use crate::{
-    http::{
-        HttpHeader, HttpMethod, RequestPayload,
-        endpoint::{
-            flintstone::{FlintstoneRequestOptions, FlintstoneResponsePayload},
-            log_donations::{DonationsLogRequestOptions, LogDonationsResponsePayload},
-            markov::{MarkovRequestParams, MarkovResponsePayload},
-            process_new_donations::ProcessNewDonationsResponsePayload,
-            random_oblique::RandomObliqueStratResponsePayload,
-        },
+use crate::http::{
+    EndpointUrl, HttpHeader, HttpMethod, RequestPayload, ResponsePayload,
+    endpoint::{
+        donation::{DonationRequestAction, DonationRequestOptions, DonationResponsePayload},
+        flintstone::{FlintstoneRequestOptions, FlintstoneResponsePayload},
+        markov::{MarkovRequestParams, MarkovResponsePayload},
+        random_oblique::RandomObliqueStratResponsePayload,
     },
-    misc::constant,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use url::Url;
 
-use super::{EndpointUrl, ResponsePayload};
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ApiRequest {
+    Donation(DonationRequestOptions),
     Flintstone(FlintstoneRequestOptions),
-    LogDonations(DonationsLogRequestOptions),
+    // LogDonations(DonationsLogRequestOptions),
     Markov(MarkovRequestParams),
-    ProcessNewDonations,
+    // ProcessNewDonations,
     RandomObliqueStrat,
 }
 
 impl ApiRequest {
     pub fn parse_response_payload(&self, data_value: Value) -> ResponsePayload {
         match self {
+            ApiRequest::Donation(_) => {
+                ResponsePayload::Donation(DonationResponsePayload::from(data_value))
+            }
             ApiRequest::Flintstone(_) => {
                 ResponsePayload::Flintstone(FlintstoneResponsePayload::from(data_value))
             }
-            ApiRequest::LogDonations(_) => {
-                ResponsePayload::LogDonations(LogDonationsResponsePayload::from(data_value))
-            }
+            // ApiRequest::LogDonations(_) => {
+            //     ResponsePayload::LogDonations(LogDonationsResponsePayload::from(data_value))
+            // }
             ApiRequest::Markov(_) => {
                 ResponsePayload::Markov(MarkovResponsePayload::from(data_value))
             }
-            ApiRequest::ProcessNewDonations => ResponsePayload::ProcessNewDonations(
-                ProcessNewDonationsResponsePayload::from(data_value),
-            ),
+            // ApiRequest::ProcessNewDonations => ResponsePayload::ProcessNewDonations(
+            //     ProcessNewDonationsResponsePayload::from(data_value),
+            // ),
             ApiRequest::RandomObliqueStrat => ResponsePayload::RandomObliqueStrat(
                 RandomObliqueStratResponsePayload::from(data_value),
             ),
@@ -51,24 +49,54 @@ impl ApiRequest {
 impl From<ApiRequest> for HttpRequest {
     fn from(request: ApiRequest) -> Self {
         match request {
-            ApiRequest::LogDonations(options) => {
-                let mut url = EndpointUrl::LogDonations.as_url();
-                match options {
-                    DonationsLogRequestOptions::OldDonations => {
-                        url.set_query(Some(&format!("file={}", constant::OLD_DONATION_URI)));
+            ApiRequest::Donation(options) => {
+                let method = match options.action {
+                    DonationRequestAction::Fetch => HttpMethod::GET,
+                    DonationRequestAction::Process => HttpMethod::POST,
+                    DonationRequestAction::Add => HttpMethod::POST,
+                };
+
+                let mut url = EndpointUrl::Donation.as_url();
+                url.set_query(Some(&format!("action={}", options.action.to_string())));
+
+                match options.action {
+                    DonationRequestAction::Fetch => {
+                        if let Some(file) = options.file {
+                            url.set_query(Some(&format!("file={}", file.to_string())));
+                        }
+                        // download not currently supported
                     }
-                    DonationsLogRequestOptions::NewDonations => {
-                        url.set_query(Some(&format!("file={}", constant::NEW_DONATION_URI)));
+                    DonationRequestAction::Process => {}
+                    DonationRequestAction::Add => {
+                        // adding donation not currently supported
                     }
                 }
 
                 HttpRequest::new(
-                    HttpMethod::GET,
+                    method,
                     url,
                     vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
                     None,
                 )
             }
+            // ApiRequest::LogDonations(options) => {
+            //     let mut url = EndpointUrl::LogDonations.as_url();
+            //     match options {
+            //         DonationsLogRequestOptions::OldDonations => {
+            //             url.set_query(Some(&format!("file={}", constant::OLD_DONATION_URI)));
+            //         }
+            //         DonationsLogRequestOptions::NewDonations => {
+            //             url.set_query(Some(&format!("file={}", constant::NEW_DONATION_URI)));
+            //         }
+            //     }
+
+            //     HttpRequest::new(
+            //         HttpMethod::GET,
+            //         url,
+            //         vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
+            //         None,
+            //     )
+            // }
             ApiRequest::Flintstone(options) => {
                 let mut url = EndpointUrl::Flintstone.as_url();
                 if let FlintstoneRequestOptions::IncrementCount = options {
@@ -96,12 +124,12 @@ impl From<ApiRequest> for HttpRequest {
                     None,
                 )
             }
-            ApiRequest::ProcessNewDonations => HttpRequest::new(
-                HttpMethod::GET,
-                EndpointUrl::ProcessNewDonations.as_url(),
-                vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
-                None,
-            ),
+            // ApiRequest::ProcessNewDonations => HttpRequest::new(
+            //     HttpMethod::GET,
+            //     EndpointUrl::ProcessNewDonations.as_url(),
+            //     vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
+            //     None,
+            // ),
             ApiRequest::RandomObliqueStrat => HttpRequest::new(
                 HttpMethod::GET,
                 EndpointUrl::RandomObliqueStrat.as_url(),
