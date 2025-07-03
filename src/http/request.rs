@@ -57,12 +57,13 @@ impl From<ApiRequest> for HttpRequest {
                 };
 
                 let mut url = EndpointUrl::Donation.as_url();
-                url.set_query(Some(&format!("action={}", options.action.to_string())));
+                url.query_pairs_mut()
+                    .append_pair("action", &options.action.to_string());
 
                 match options.action {
                     DonationRequestAction::Fetch => {
                         if let Some(file) = options.file {
-                            url.set_query(Some(&format!("file={}", file.to_string())));
+                            url.query_pairs_mut().append_pair("file", &file.to_string());
                         }
                         // download not currently supported
                     }
