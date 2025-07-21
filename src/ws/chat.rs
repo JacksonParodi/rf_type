@@ -1,8 +1,9 @@
+use crate::types::tts::TextToSpeechOptions;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(rename_all = "lowercase")]
+#[serde(rename_all = "camelCase")]
 pub enum ChatColor {
     Red,
     Green,
@@ -32,20 +33,26 @@ impl ChatColor {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ChatData {
     pub name: String,
     pub text: String,
     pub color: ChatColor,
-    pub tts: bool,
+    pub tts_options: Option<TextToSpeechOptions>,
 }
 
 impl ChatData {
-    pub fn new(name: String, text: String, color: ChatColor, tts: bool) -> Self {
+    pub fn new(
+        name: String,
+        text: String,
+        color: ChatColor,
+        tts: Option<TextToSpeechOptions>,
+    ) -> Self {
         Self {
             name,
             text,
             color,
-            tts,
+            tts_options: tts,
         }
     }
 }

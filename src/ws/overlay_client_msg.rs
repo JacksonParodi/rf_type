@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(tag = "type")]
+#[serde(rename_all = "camelCase")]
 pub enum OverlayClientMessage {
     // this is a message that is intended to be handled directly by the overlay client in Javascript
     // it will be ferried by the overlay server
