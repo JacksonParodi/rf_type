@@ -1,7 +1,7 @@
 use crate::types::donation::DonationMap;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tracing::warn;
+use tracing::debug;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct DonationResponsePayload {
@@ -29,7 +29,7 @@ impl From<Value> for DonationResponsePayload {
         match value.clone() {
             Value::Object(_map) => DonationResponsePayload::new(DonationMap::from(value)),
             _ => {
-                warn!("DonationResponsePayload: Invalid value type: {}", value);
+                debug!("DonationResponsePayload: Invalid value type: {}", value);
                 DonationResponsePayload::default()
             }
         }
