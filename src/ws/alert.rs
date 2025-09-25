@@ -1,4 +1,5 @@
 use crate::types::tts::TextToSpeechOptions;
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use tracing::warn;
@@ -6,6 +7,16 @@ use tracing::warn;
 pub enum AlertMediaType {
     Video,
     Nonvideo,
+}
+
+impl AlertMediaType {
+    pub fn random() -> Self {
+        let mut rng = rand::rng();
+        match rng.random_bool(0.5) {
+            true => AlertMediaType::Video,
+            false => AlertMediaType::Nonvideo,
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
