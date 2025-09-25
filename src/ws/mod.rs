@@ -5,7 +5,7 @@ mod overlay_client_msg;
 pub use overlay_client_msg::OverlayClientMessage;
 
 mod alert;
-pub use alert::AlertData;
+pub use alert::{AlertData, AlertMediaType};
 
 mod role;
 pub use role::RoleData;
