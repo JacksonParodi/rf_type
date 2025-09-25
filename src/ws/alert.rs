@@ -3,6 +3,11 @@ use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use tracing::warn;
 
+pub enum AlertMediaType {
+    Video,
+    Nonvideo,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AlertData {
