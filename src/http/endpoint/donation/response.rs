@@ -28,6 +28,7 @@ impl From<Value> for DonationResponsePayload {
     fn from(value: Value) -> Self {
         match value.clone() {
             Value::Object(_map) => DonationResponsePayload::new(DonationMap::from(value)),
+            Value::Array(_array) => DonationResponsePayload::new(DonationMap::from(value)),
             _ => {
                 debug!("DonationResponsePayload: Invalid value type: {}", value);
                 DonationResponsePayload::default()
