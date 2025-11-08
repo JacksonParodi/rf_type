@@ -6,3 +6,6 @@ pub use manager::SecretAlertManager;
 
 mod trigger;
 pub use trigger::{SecretAlertTrigger, TwitchSubscriptionTier};
+
+mod media;
+pub use media::SecretAlertMedia;
