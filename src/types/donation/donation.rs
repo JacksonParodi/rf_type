@@ -94,13 +94,13 @@ impl From<Value> for DonationData {
                     .unwrap_or_default()
                     .to_string();
 
-                let date = map
+                let timestamp = map
                     .get("timestamp")
                     .and_then(Value::as_str)
                     .unwrap_or_default()
                     .to_string();
 
-                DonationData::new(id, donor_name, donor_message, amount, currency, date)
+                DonationData::new(id, donor_name, donor_message, amount, currency, timestamp)
             }
             _ => {
                 error!("Donation: Invalid value type: {}", value);
@@ -140,6 +140,22 @@ impl From<Value> for DonationMap {
                     match donation.is_valid() {
                         true => {
                             hash_map.insert(key, donation);
+                        }
+                        false => {
+                            error!("DonationMap: Invalid donation: {:?}", donation);
+                        }
+                    }
+                }
+                DonationMap::new(hash_map)
+            }
+            Value::Array(array) => {
+                let mut hash_map = HashMap::new();
+
+                for value in array {
+                    let donation = DonationData::from(value);
+                    match donation.is_valid() {
+                        true => {
+                            hash_map.insert(donation.id.clone(), donation);
                         }
                         false => {
                             error!("DonationMap: Invalid donation: {:?}", donation);

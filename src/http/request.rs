@@ -52,7 +52,6 @@ impl From<ApiRequest> for HttpRequest {
             ApiRequest::Donation(options) => {
                 let method = match options.action {
                     DonationRequestAction::Fetch => HttpMethod::GET,
-                    DonationRequestAction::Process => HttpMethod::POST,
                     DonationRequestAction::Add => HttpMethod::POST,
                 };
 
@@ -62,12 +61,11 @@ impl From<ApiRequest> for HttpRequest {
 
                 match options.action {
                     DonationRequestAction::Fetch => {
-                        if let Some(file) = options.file {
-                            url.query_pairs_mut().append_pair("file", &file.to_string());
+                        if let Some(amount) = options.amount {
+                            url.query_pairs_mut()
+                                .append_pair("amount", &amount.to_string());
                         }
-                        // download not currently supported
                     }
-                    DonationRequestAction::Process => {}
                     DonationRequestAction::Add => {
                         // adding donation not currently supported
                     }
