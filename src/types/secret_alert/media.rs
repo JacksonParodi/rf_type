@@ -13,16 +13,16 @@ pub struct VideoMedia {
 
 #[derive(Serialize, Deserialize, PartialEq, Hash, Eq)]
 /// the relevant filenames with no extensions
-pub enum SecretAlertMedia {
+pub enum AlertMedia {
     // video filename
     Video(VideoMedia),
     // (audio filename, image filename)
     Nonvideo(NonvideoMedia),
 }
 
-impl Default for SecretAlertMedia {
+impl Default for AlertMedia {
     fn default() -> Self {
-        SecretAlertMedia::Nonvideo(NonvideoMedia {
+        AlertMedia::Nonvideo(NonvideoMedia {
             audio_filename: "default_alert".to_string(),
             image_filename: "default_alert".to_string(),
         })

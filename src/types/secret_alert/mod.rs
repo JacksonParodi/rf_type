@@ -8,4 +8,4 @@ mod trigger;
 pub use trigger::{SecretAlertTrigger, TwitchSubscriptionTier};
 
 mod media;
-pub use media::{NonvideoMedia, SecretAlertMedia, VideoMedia};
+pub use media::{AlertMedia, NonvideoMedia, VideoMedia};
