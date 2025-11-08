@@ -47,7 +47,7 @@ impl ManifestEntry {
         }
     }
 
-    fn find_item(&self, target_name: &str, is_dir: bool) -> Option<Self> {
+    pub fn find_item(&self, target_name: &str, is_dir: bool) -> Option<Self> {
         let mut result = None;
 
         if self.path.file_name()?.to_str()? == target_name {
