@@ -19,6 +19,10 @@ impl Default for SecretAlertManager {
 }
 
 impl SecretAlertManager {
+    pub fn insert_entry(&mut self, entry: SecretAlertEntry) {
+        self.map.insert(entry.trigger.clone(), entry);
+    }
+
     pub fn save_to_file(&self, file_path: &str) -> Result<(), RfError> {
         match toml::to_string_pretty(&self) {
             Ok(serialized) => match std::fs::write(file_path, serialized) {
