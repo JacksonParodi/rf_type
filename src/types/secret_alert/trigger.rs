@@ -8,7 +8,7 @@ pub enum TwitchSubscriptionTier {
     Tier3,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Debug)]
 pub enum SecretAlertTrigger {
     Bits(u32),
     Donation(u64),
