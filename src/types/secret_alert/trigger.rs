@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Hash, Eq, PartialEq)]
-pub enum TwitchSubcriptionTier {
+pub enum TwitchSubscriptionTier {
     Prime,
     Tier1,
     Tier2,
@@ -12,7 +12,7 @@ pub enum TwitchSubcriptionTier {
 pub enum SecretAlertTrigger {
     Bits(u32),
     Donation(u64),
-    GiftSubcription(u32),
-    Subcription(TwitchSubcriptionTier),
+    GiftSubscription(u32),
+    Subscription(TwitchSubscriptionTier),
     Raid,
 }

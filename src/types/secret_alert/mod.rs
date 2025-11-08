@@ -5,4 +5,4 @@ mod manager;
 pub use manager::SecretAlertManager;
 
 mod trigger;
-pub use trigger::{SecretAlertTrigger, TwitchSubcriptionTier};
+pub use trigger::{SecretAlertTrigger, TwitchSubscriptionTier};
