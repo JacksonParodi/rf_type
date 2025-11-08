@@ -10,13 +10,15 @@ pub struct SecretAlertManager {
     pub map: HashMap<SecretAlertTrigger, SecretAlertEntry>,
 }
 
-impl SecretAlertManager {
-    pub fn new() -> Self {
+impl Default for SecretAlertManager {
+    fn default() -> Self {
         SecretAlertManager {
             map: HashMap::new(),
         }
     }
+}
 
+impl SecretAlertManager {
     pub fn save_to_file(&self, file_path: &str) -> Result<(), RfError> {
         match toml::to_string_pretty(&self) {
             Ok(serialized) => match std::fs::write(file_path, serialized) {
