@@ -12,4 +12,5 @@ pub enum OverlayClientMessage {
     Chat(ChatData),
     #[serde(rename = "alert")]
     Alert(AlertData),
+    // Command(CommandData)
 }

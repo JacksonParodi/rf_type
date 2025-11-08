@@ -10,6 +10,7 @@ pub struct ManifestEntry {
     is_dir: bool,
     children: Option<Vec<ManifestEntry>>,
 }
+
 impl ManifestEntry {
     pub fn new(path: PathBuf, is_dir: bool) -> Self {
         ManifestEntry {
@@ -46,25 +47,27 @@ impl ManifestEntry {
         }
     }
 
-    fn find_item(&self, file_name: &str, looking_for_dir: bool) -> Option<Self> {
+    fn find_item(&self, file_name: &str, is_dir: bool) -> Option<Self> {
         let mut result = None;
 
         if self.path.file_name()?.to_str()? == file_name {
             result = Some(self.to_owned());
         }
+
         if let Some(children) = &self.children {
             for child in children {
-                if let Some(entry) = child.find_item(file_name, looking_for_dir) {
-                    if looking_for_dir && !entry.is_dir {
+                if let Some(entry) = child.find_item(file_name, is_dir) {
+                    if is_dir && !entry.is_dir {
                         continue;
                     }
-                    if !looking_for_dir && entry.is_dir {
+                    if !is_dir && entry.is_dir {
                         continue;
                     }
                     result = Some(entry);
                 }
             }
         }
+
         result
     }
 

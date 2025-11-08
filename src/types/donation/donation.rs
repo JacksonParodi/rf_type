@@ -8,7 +8,7 @@ pub struct DonationData {
     pub id: String,
     pub donor_name: String,
     pub donor_message: String,
-    pub amount: f64,
+    pub amount: u64,
     pub currency: String,
     pub date: String,
 }
@@ -18,7 +18,7 @@ impl DonationData {
         id: String,
         donor_name: String,
         donor_message: String,
-        amount: f64,
+        amount: u64,
         currency: String,
         date: String,
     ) -> Self {
@@ -33,16 +33,14 @@ impl DonationData {
     }
 
     pub fn is_valid(&self) -> bool {
-        !self.id.is_empty() && !self.donor_name.is_empty() && self.amount > 0.0
+        !self.id.is_empty() && !self.donor_name.is_empty() && self.amount > 0
     }
 
     pub fn to_display_string(&self) -> String {
+        let amount_string = format!("{:.2}", self.amount as f64 / 100.0);
         format!(
             "{} tipped {} {}. {}",
-            self.donor_name,
-            format!("{:.2}", self.amount),
-            self.currency,
-            self.donor_message
+            self.donor_name, amount_string, self.currency, self.donor_message
         )
     }
 }
@@ -53,7 +51,7 @@ impl Default for DonationData {
             id: String::new(),
             donor_name: String::new(),
             donor_message: String::new(),
-            amount: 0.0,
+            amount: 0,
             currency: String::new(),
             date: String::new(),
         }
@@ -82,11 +80,15 @@ impl From<Value> for DonationData {
                     .unwrap_or_default()
                     .to_string();
 
-                let amount = map
+                let amount_float = map
                     .get("amount")
                     .and_then(Value::as_str)
                     .and_then(|s| s.parse::<f64>().ok())
                     .unwrap_or(0.0);
+
+                // convert amount to cents (u64)
+                // how does it work for non-USD currencies? no clue, would be a nice problem to have
+                let amount = (amount_float * 100.0).round() as u64;
 
                 let currency = map
                     .get("currency")
