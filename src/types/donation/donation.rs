@@ -3,7 +3,7 @@ use serde_json::Value;
 use std::collections::HashMap;
 use tracing::error;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct DonationData {
     pub id: String,
     pub donor_name: String,
