@@ -19,3 +19,12 @@ pub enum SecretAlertMedia {
     // (audio filename, image filename)
     Nonvideo(NonvideoMedia),
 }
+
+impl Default for SecretAlertMedia {
+    fn default() -> Self {
+        SecretAlertMedia::Nonvideo(NonvideoMedia {
+            audio_filename: "default_alert".to_string(),
+            image_filename: "default_alert".to_string(),
+        })
+    }
+}

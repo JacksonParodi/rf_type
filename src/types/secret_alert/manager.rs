@@ -1,6 +1,6 @@
 use crate::{
     error::RfError,
-    types::secret_alert::{SecretAlertEntry, SecretAlertTrigger},
+    types::secret_alert::{SecretAlertEntry, SecretAlertMedia, SecretAlertTrigger},
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -9,12 +9,14 @@ use std::collections::HashMap;
 pub struct SecretAlertManager {
     #[serde(with = "trigger_map")]
     pub map: HashMap<SecretAlertTrigger, SecretAlertEntry>,
+    pub default_media: SecretAlertMedia,
 }
 
 impl Default for SecretAlertManager {
     fn default() -> Self {
         SecretAlertManager {
             map: HashMap::new(),
+            default_media: SecretAlertMedia::default(),
         }
     }
 }
