@@ -47,16 +47,22 @@ impl ManifestEntry {
         }
     }
 
-    fn find_item(&self, file_name: &str, is_dir: bool) -> Option<Self> {
+    fn find_item(&self, target_name: &str, is_dir: bool) -> Option<Self> {
         let mut result = None;
 
-        if self.path.file_name()?.to_str()? == file_name {
+        if self.path.file_name()?.to_str()? == target_name {
+            result = Some(self.to_owned());
+        }
+
+        let path = std::path::PathBuf::from(target_name);
+        let path_no_ext = path.with_extension("");
+        if self.path.file_stem()?.to_str()? == path_no_ext.file_stem()?.to_str()? {
             result = Some(self.to_owned());
         }
 
         if let Some(children) = &self.children {
             for child in children {
-                if let Some(entry) = child.find_item(file_name, is_dir) {
+                if let Some(entry) = child.find_item(target_name, is_dir) {
                     if is_dir && !entry.is_dir {
                         continue;
                     }
