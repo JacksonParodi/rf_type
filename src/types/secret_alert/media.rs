@@ -1,17 +1,17 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, PartialEq, Hash, Eq, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Hash, Eq, Clone, Debug)]
 pub struct NonvideoMedia {
     pub audio_filename: String,
     pub image_filename: String,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Hash, Eq, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Hash, Eq, Clone, Debug)]
 pub struct VideoMedia {
     pub video_filename: String,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Hash, Eq, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Hash, Eq, Clone, Debug)]
 /// the relevant filenames with no extensions
 pub enum AlertMedia {
     // video filename
