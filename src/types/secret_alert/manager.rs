@@ -1,6 +1,6 @@
 use crate::{
     error::RfError,
-    types::secret_alert::{SecretAlertEntry, SecretAlertTrigger},
+    types::secret_alert::{SecretAlertEntry, SecretAlertTrigger, TwitchSubscriptionTier},
 };
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -13,9 +13,28 @@ pub struct SecretAlertManager {
 
 impl Default for SecretAlertManager {
     fn default() -> Self {
-        SecretAlertManager {
-            map: HashMap::new(),
+        let default_triggers = vec![
+            SecretAlertTrigger::Subscription(TwitchSubscriptionTier::Prime),
+            SecretAlertTrigger::Subscription(TwitchSubscriptionTier::Tier1),
+            SecretAlertTrigger::Subscription(TwitchSubscriptionTier::Tier2),
+            SecretAlertTrigger::Subscription(TwitchSubscriptionTier::Tier3),
+            SecretAlertTrigger::Bits(100),
+            SecretAlertTrigger::Bits(500),
+            SecretAlertTrigger::Bits(1000),
+            SecretAlertTrigger::Donation(300),
+            SecretAlertTrigger::Donation(1000),
+            SecretAlertTrigger::GiftSubscription(5),
+            SecretAlertTrigger::GiftSubscription(10),
+            SecretAlertTrigger::Raid,
+        ];
+
+        let mut map = HashMap::new();
+
+        for trigger in default_triggers {
+            map.insert(trigger, SecretAlertEntry::default());
         }
+
+        SecretAlertManager { map }
     }
 }
 

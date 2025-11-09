@@ -7,3 +7,12 @@ pub struct SecretAlertEntry {
     pub media: AlertMedia,
     pub found: bool,
 }
+
+impl Default for SecretAlertEntry {
+    fn default() -> Self {
+        SecretAlertEntry {
+            media: AlertMedia::default(),
+            found: false,
+        }
+    }
+}

@@ -11,7 +11,7 @@ pub enum TwitchSubscriptionTier {
 #[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Debug)]
 pub enum SecretAlertTrigger {
     Bits(u32),
-    Donation(u64),
+    Donation(u64), // in USD cents
     GiftSubscription(u32),
     Subscription(TwitchSubscriptionTier),
     Raid,
