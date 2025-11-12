@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tracing::warn;
 use twitch_api::{
-    eventsub::channel::chat::notification::{CommunitySubGift, Subscription},
+    eventsub::channel::chat::notification::{CommunitySubGift, Resubscription, Subscription},
     types::SubscriptionTier,
 };
 
@@ -24,18 +24,13 @@ pub enum SecretAlertTrigger {
 
 impl From<Subscription> for TwitchSubscriptionTier {
     fn from(sub: Subscription) -> Self {
-        match &sub.sub_tier {
-            SubscriptionTier::Tier1 => TwitchSubscriptionTier::Tier1,
-            SubscriptionTier::Tier2 => TwitchSubscriptionTier::Tier2,
-            SubscriptionTier::Tier3 => TwitchSubscriptionTier::Tier3,
-            _ => match sub.is_prime {
-                true => TwitchSubscriptionTier::Prime,
-                false => {
-                    warn!("unknown subscription tier, defaulting to Tier1");
-                    TwitchSubscriptionTier::Tier1
-                }
-            },
-        }
+        get_twitch_subscription_tier(&sub.sub_tier, sub.is_prime)
+    }
+}
+
+impl From<Resubscription> for TwitchSubscriptionTier {
+    fn from(sub: Resubscription) -> Self {
+        get_twitch_subscription_tier(&sub.sub_tier, sub.is_prime)
     }
 }
 
@@ -43,5 +38,20 @@ impl From<CommunitySubGift> for SecretAlertTrigger {
     fn from(sub: CommunitySubGift) -> Self {
         let total = sub.total.max(1) as u32;
         SecretAlertTrigger::GiftSubscription(total)
+    }
+}
+
+fn get_twitch_subscription_tier(tier: &SubscriptionTier, is_prime: bool) -> TwitchSubscriptionTier {
+    match tier {
+        SubscriptionTier::Tier1 => TwitchSubscriptionTier::Tier1,
+        SubscriptionTier::Tier2 => TwitchSubscriptionTier::Tier2,
+        SubscriptionTier::Tier3 => TwitchSubscriptionTier::Tier3,
+        _ => match is_prime {
+            true => TwitchSubscriptionTier::Prime,
+            false => {
+                warn!("unknown subscription tier, defaulting to Tier1");
+                TwitchSubscriptionTier::Tier1
+            }
+        },
     }
 }
