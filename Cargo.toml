@@ -13,5 +13,6 @@ serde_json = "1.0.140"
 serenity = "0.12.4"
 toml = "0.8.23"
 tracing = "0.1.41"
+twitch_api = { version = "0.7.2", features = ["eventsub"] }
 url = { version = "2.5.4", features = ["serde"] }
 uuid = { version = "1.16.0", features = ["serde", "v4"] }
