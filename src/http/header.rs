@@ -5,7 +5,7 @@ use std::env;
 #[derive(Debug, PartialEq, Eq)]
 pub enum HttpHeader {
     ContentTypeJson,
-    ApiKey,
+    ApiToken,
 }
 
 impl HttpHeader {
@@ -14,8 +14,8 @@ impl HttpHeader {
             HttpHeader::ContentTypeJson => {
                 Ok(("Content-Type".to_string(), "application/json".to_string()))
             }
-            HttpHeader::ApiKey => {
-                let api_key = env::var("JPCOM_API_KEY")?;
+            HttpHeader::ApiToken => {
+                let api_key = env::var(constant::API_TOKEN_ENV_VAR)?;
                 Ok((constant::X_API_HEADER.to_string(), api_key))
             }
         }
@@ -34,9 +34,9 @@ impl Serialize for HttpHeader {
                 state.serialize_field("value", "application/json")?;
                 state.end()
             }
-            HttpHeader::ApiKey => {
-                let api_key = env::var("JPCOM_API_KEY").map_err(|_| {
-                    serde::ser::Error::custom("JPCOM_API_KEY environment variable not set")
+            HttpHeader::ApiToken => {
+                let api_key = env::var(constant::API_TOKEN_ENV_VAR).map_err(|_| {
+                    serde::ser::Error::custom("jpcom api token environment variable not set")
                 })?;
                 let mut state = serializer.serialize_struct("HttpHeader", 2)?;
                 state.serialize_field("name", constant::X_API_HEADER)?;
@@ -61,8 +61,8 @@ impl<'de> Deserialize<'de> for HttpHeader {
         let helper = HeaderHelper::deserialize(deserializer)?;
         match helper.name.as_str() {
             "Content-Type" if helper.value == "application/json" => Ok(HttpHeader::ContentTypeJson),
-            "X-API-Key" => Ok(HttpHeader::ApiKey),
-            _ => Err(de::Error::custom("Unknown header")),
+            constant::API_TOKEN_ENV_VAR => Ok(HttpHeader::ApiToken),
+            _ => Err(de::Error::custom("unknown header")),
         }
     }
 }

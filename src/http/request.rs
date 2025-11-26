@@ -3,7 +3,6 @@ use crate::http::{
     endpoint::{
         donation::{DonationRequestAction, DonationRequestOptions, DonationResponsePayload},
         flintstone::{FlintstoneRequestOptions, FlintstoneResponsePayload},
-        markov::{MarkovRequestParams, MarkovResponsePayload},
         random_oblique::RandomObliqueStratResponsePayload,
     },
 };
@@ -15,9 +14,6 @@ use url::Url;
 pub enum ApiRequest {
     Donation(DonationRequestOptions),
     Flintstone(FlintstoneRequestOptions),
-    // LogDonations(DonationsLogRequestOptions),
-    Markov(MarkovRequestParams),
-    // ProcessNewDonations,
     RandomObliqueStrat,
 }
 
@@ -30,15 +26,6 @@ impl ApiRequest {
             ApiRequest::Flintstone(_) => {
                 ResponsePayload::Flintstone(FlintstoneResponsePayload::from(data_value))
             }
-            // ApiRequest::LogDonations(_) => {
-            //     ResponsePayload::LogDonations(LogDonationsResponsePayload::from(data_value))
-            // }
-            ApiRequest::Markov(_) => {
-                ResponsePayload::Markov(MarkovResponsePayload::from(data_value))
-            }
-            // ApiRequest::ProcessNewDonations => ResponsePayload::ProcessNewDonations(
-            //     ProcessNewDonationsResponsePayload::from(data_value),
-            // ),
             ApiRequest::RandomObliqueStrat => ResponsePayload::RandomObliqueStrat(
                 RandomObliqueStratResponsePayload::from(data_value),
             ),
@@ -74,28 +61,10 @@ impl From<ApiRequest> for HttpRequest {
                 HttpRequest::new(
                     method,
                     url,
-                    vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
+                    vec![HttpHeader::ContentTypeJson, HttpHeader::ApiToken],
                     None,
                 )
             }
-            // ApiRequest::LogDonations(options) => {
-            //     let mut url = EndpointUrl::LogDonations.as_url();
-            //     match options {
-            //         DonationsLogRequestOptions::OldDonations => {
-            //             url.set_query(Some(&format!("file={}", constant::OLD_DONATION_URI)));
-            //         }
-            //         DonationsLogRequestOptions::NewDonations => {
-            //             url.set_query(Some(&format!("file={}", constant::NEW_DONATION_URI)));
-            //         }
-            //     }
-
-            //     HttpRequest::new(
-            //         HttpMethod::GET,
-            //         url,
-            //         vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
-            //         None,
-            //     )
-            // }
             ApiRequest::Flintstone(options) => {
                 let mut url = EndpointUrl::Flintstone.as_url();
                 if let FlintstoneRequestOptions::IncrementCount = options {
@@ -105,34 +74,14 @@ impl From<ApiRequest> for HttpRequest {
                 HttpRequest::new(
                     HttpMethod::GET,
                     url,
-                    vec![HttpHeader::ContentTypeJson],
+                    vec![HttpHeader::ContentTypeJson, HttpHeader::ApiToken],
                     None,
                 )
             }
-            ApiRequest::Markov(options) => {
-                let mut url = EndpointUrl::Markov.as_url();
-
-                if let Some(seed) = options.seed {
-                    url.set_query(Some(&format!("seed={}", seed)));
-                }
-
-                HttpRequest::new(
-                    HttpMethod::GET,
-                    url,
-                    vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
-                    None,
-                )
-            }
-            // ApiRequest::ProcessNewDonations => HttpRequest::new(
-            //     HttpMethod::GET,
-            //     EndpointUrl::ProcessNewDonations.as_url(),
-            //     vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
-            //     None,
-            // ),
             ApiRequest::RandomObliqueStrat => HttpRequest::new(
                 HttpMethod::GET,
                 EndpointUrl::RandomObliqueStrat.as_url(),
-                vec![HttpHeader::ContentTypeJson, HttpHeader::ApiKey],
+                vec![HttpHeader::ContentTypeJson, HttpHeader::ApiToken],
                 None,
             ),
         }
