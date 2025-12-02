@@ -3,12 +3,12 @@ use crate::{
     types::secret_alert::{SecretAlertEntry, SecretAlertTrigger, TwitchSubscriptionTier},
 };
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(Serialize, Deserialize)]
 pub struct SecretAlertManager {
     #[serde(with = "trigger_map")]
-    pub map: HashMap<SecretAlertTrigger, SecretAlertEntry>,
+    pub map: BTreeMap<SecretAlertTrigger, SecretAlertEntry>,
 }
 
 impl Default for SecretAlertManager {
@@ -28,7 +28,7 @@ impl Default for SecretAlertManager {
             SecretAlertTrigger::Raid,
         ];
 
-        let mut map = HashMap::new();
+        let mut map = BTreeMap::new();
 
         for trigger in default_triggers {
             map.insert(trigger, SecretAlertEntry::default());
@@ -79,16 +79,13 @@ mod trigger_map {
     use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
     pub fn serialize<S>(
-        map: &HashMap<SecretAlertTrigger, SecretAlertEntry>,
+        map: &BTreeMap<SecretAlertTrigger, SecretAlertEntry>,
         serializer: S,
     ) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        let mut sorted_pairs: Vec<_> = map.iter().collect();
-        sorted_pairs.sort_by_key(|(trigger, _)| *trigger);
-
-        let string_map: HashMap<String, &SecretAlertEntry> = sorted_pairs
+        let string_map: BTreeMap<String, &SecretAlertEntry> = map
             .into_iter()
             .map(|(k, v)| (trigger_to_string(k), v))
             .collect();
@@ -97,11 +94,11 @@ mod trigger_map {
 
     pub fn deserialize<'de, D>(
         deserializer: D,
-    ) -> Result<HashMap<SecretAlertTrigger, SecretAlertEntry>, D::Error>
+    ) -> Result<BTreeMap<SecretAlertTrigger, SecretAlertEntry>, D::Error>
     where
         D: Deserializer<'de>,
     {
-        let string_map: HashMap<String, SecretAlertEntry> = HashMap::deserialize(deserializer)?;
+        let string_map: BTreeMap<String, SecretAlertEntry> = BTreeMap::deserialize(deserializer)?;
         let map = string_map
             .into_iter()
             .filter_map(|(k, v)| string_to_trigger(&k).map(|trigger| (trigger, v)))
