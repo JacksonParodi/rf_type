@@ -13,6 +13,33 @@ pub enum TwitchSubscriptionTier {
     Tier3,
 }
 
+impl Ord for TwitchSubscriptionTier {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        use TwitchSubscriptionTier::*;
+
+        let self_priority = match self {
+            Prime => 0,
+            Tier1 => 1,
+            Tier2 => 2,
+            Tier3 => 3,
+        };
+
+        let other_priority = match other {
+            Prime => 0,
+            Tier1 => 1,
+            Tier2 => 2,
+            Tier3 => 3,
+        };
+
+        self_priority.cmp(&other_priority)
+    }
+}
+
+impl PartialOrd for TwitchSubscriptionTier {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
 #[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Debug)]
 pub enum SecretAlertTrigger {
     Bits(u32),
@@ -20,6 +47,45 @@ pub enum SecretAlertTrigger {
     GiftSubscription(u32),
     Subscription(TwitchSubscriptionTier),
     Raid,
+}
+
+impl Ord for SecretAlertTrigger {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        use SecretAlertTrigger::*;
+
+        let self_priority = match self {
+            Bits(_) => 0,
+            Donation(_) => 1,
+            Subscription(_) => 2,
+            GiftSubscription(_) => 3,
+            Raid => 4,
+        };
+
+        let other_priority = match other {
+            Bits(_) => 0,
+            Donation(_) => 1,
+            Subscription(_) => 2,
+            GiftSubscription(_) => 3,
+            Raid => 4,
+        };
+
+        match self_priority.cmp(&other_priority) {
+            std::cmp::Ordering::Equal => match (self, other) {
+                (Bits(a), Bits(b)) => a.cmp(b),
+                (Donation(a), Donation(b)) => a.cmp(b),
+                (GiftSubscription(a), GiftSubscription(b)) => a.cmp(b),
+                (Subscription(a), Subscription(b)) => a.cmp(b),
+                _ => std::cmp::Ordering::Equal,
+            },
+            ordering => ordering,
+        }
+    }
+}
+
+impl PartialOrd for SecretAlertTrigger {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl From<Subscription> for TwitchSubscriptionTier {

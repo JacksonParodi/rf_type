@@ -85,8 +85,13 @@ mod trigger_map {
     where
         S: Serializer,
     {
-        let string_map: HashMap<String, &SecretAlertEntry> =
-            map.iter().map(|(k, v)| (trigger_to_string(k), v)).collect();
+        let mut sorted_pairs: Vec<_> = map.iter().collect();
+        sorted_pairs.sort_by_key(|(trigger, _)| *trigger);
+
+        let string_map: HashMap<String, &SecretAlertEntry> = sorted_pairs
+            .into_iter()
+            .map(|(k, v)| (trigger_to_string(k), v))
+            .collect();
         string_map.serialize(serializer)
     }
 
