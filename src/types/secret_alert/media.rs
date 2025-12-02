@@ -1,3 +1,4 @@
+use rand::Rng;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, PartialEq, Hash, Eq, Clone, Debug)]
@@ -22,9 +23,15 @@ pub enum AlertMedia {
 
 impl Default for AlertMedia {
     fn default() -> Self {
-        AlertMedia::Nonvideo(NonvideoMedia {
-            audio_filename: "default_alert".to_string(),
-            image_filename: "default_alert".to_string(),
-        })
+        let mut rng = rand::rng();
+        match rng.random_bool(0.5) {
+            true => AlertMedia::Video(VideoMedia {
+                video_filename: "default_video_alert".to_string(),
+            }),
+            false => AlertMedia::Nonvideo(NonvideoMedia {
+                audio_filename: "default_audio_alert".to_string(),
+                image_filename: "default_image_alert".to_string(),
+            }),
+        }
     }
 }
