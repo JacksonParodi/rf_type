@@ -2,13 +2,45 @@ use crate::{
     error::RfError,
     types::secret_alert::{SecretAlertEntry, SecretAlertTrigger, TwitchSubscriptionTier},
 };
-use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::{
+    collections::{BTreeMap, HashSet},
+    str::FromStr,
+};
 
-#[derive(Serialize, Deserialize)]
+// #[derive(Serialize, Deserialize)]
 pub struct SecretAlertManager {
-    #[serde(with = "trigger_map")]
+    // #[serde(with = "trigger_map")]
     pub map: BTreeMap<SecretAlertTrigger, SecretAlertEntry>,
+}
+
+impl Serialize for SecretAlertManager {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let string_map: BTreeMap<String, &SecretAlertEntry> =
+            self.map.iter().map(|(k, v)| (k.to_string(), v)).collect();
+        string_map.serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for SecretAlertManager {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let string_map: BTreeMap<String, SecretAlertEntry> = BTreeMap::deserialize(deserializer)?;
+        let map = string_map
+            .into_iter()
+            .filter_map(|(k, v)| {
+                SecretAlertTrigger::from_str(&k)
+                    .ok()
+                    .map(|trigger| (trigger, v))
+            })
+            .collect();
+        Ok(SecretAlertManager { map })
+    }
 }
 
 impl Default for SecretAlertManager {
@@ -72,91 +104,107 @@ impl SecretAlertManager {
             ))),
         }
     }
-}
 
-mod trigger_map {
-    use super::*;
-    use serde::{Deserialize, Deserializer, Serialize, Serializer};
+    pub fn validate(&self) -> Result<(), RfError> {
+        let mut seen_entries: HashSet<&SecretAlertEntry> = HashSet::new();
 
-    pub fn serialize<S>(
-        map: &BTreeMap<SecretAlertTrigger, SecretAlertEntry>,
-        serializer: S,
-    ) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let string_map: BTreeMap<String, &SecretAlertEntry> = map
-            .into_iter()
-            .map(|(k, v)| (trigger_to_string(k), v))
-            .collect();
-        string_map.serialize(serializer)
-    }
-
-    pub fn deserialize<'de, D>(
-        deserializer: D,
-    ) -> Result<BTreeMap<SecretAlertTrigger, SecretAlertEntry>, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let string_map: BTreeMap<String, SecretAlertEntry> = BTreeMap::deserialize(deserializer)?;
-        let map = string_map
-            .into_iter()
-            .filter_map(|(k, v)| string_to_trigger(&k).map(|trigger| (trigger, v)))
-            .collect();
-        Ok(map)
-    }
-
-    fn trigger_to_string(trigger: &SecretAlertTrigger) -> String {
-        match trigger {
-            SecretAlertTrigger::Bits(amount) => format!("bits_{}", amount),
-            SecretAlertTrigger::Donation(amount) => format!("donation_{}", amount),
-            SecretAlertTrigger::GiftSubscription(count) => format!("gift_sub_{}", count),
-            SecretAlertTrigger::Subscription(tier) => format!("subscription_{:?}", tier),
-            SecretAlertTrigger::Raid => "raid".to_string(),
-        }
-    }
-
-    fn string_to_trigger(s: &str) -> Option<SecretAlertTrigger> {
-        if s == "raid" {
-            return Some(SecretAlertTrigger::Raid);
-        }
-
-        if let Some(amount_str) = s.strip_prefix("bits_") {
-            if let Ok(amount) = amount_str.parse::<u32>() {
-                return Some(SecretAlertTrigger::Bits(amount));
+        for (trigger, entry) in &self.map {
+            if seen_entries.contains(entry) {
+                return Err(RfError::Other(format!(
+                    "Duplicate SecretAlertEntry found for trigger {:?}",
+                    trigger
+                )));
             }
+            seen_entries.insert(entry);
         }
 
-        if let Some(amount_str) = s.strip_prefix("donation_") {
-            if let Ok(amount) = amount_str.parse::<u64>() {
-                return Some(SecretAlertTrigger::Donation(amount));
-            }
-        }
-
-        if let Some(count_str) = s.strip_prefix("gift_sub_") {
-            if let Ok(count) = count_str.parse::<u32>() {
-                return Some(SecretAlertTrigger::GiftSubscription(count));
-            }
-        }
-
-        if let Some(tier_str) = s.strip_prefix("subscription_") {
-            match tier_str {
-                "Prime" => Some(SecretAlertTrigger::Subscription(
-                    crate::types::secret_alert::TwitchSubscriptionTier::Prime,
-                )),
-                "Tier1" => Some(SecretAlertTrigger::Subscription(
-                    crate::types::secret_alert::TwitchSubscriptionTier::Tier1,
-                )),
-                "Tier2" => Some(SecretAlertTrigger::Subscription(
-                    crate::types::secret_alert::TwitchSubscriptionTier::Tier2,
-                )),
-                "Tier3" => Some(SecretAlertTrigger::Subscription(
-                    crate::types::secret_alert::TwitchSubscriptionTier::Tier3,
-                )),
-                _ => None,
-            }
-        } else {
-            None
-        }
+        Ok(())
     }
 }
+
+// mod trigger_map {
+//     use super::*;
+//     use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+//     pub fn serialize<S>(
+//         map: &BTreeMap<SecretAlertTrigger, SecretAlertEntry>,
+//         serializer: S,
+//     ) -> Result<S::Ok, S::Error>
+//     where
+//         S: Serializer,
+//     {
+//         let string_map: BTreeMap<String, &SecretAlertEntry> = map
+//             .into_iter()
+//             .map(|(k, v)| (trigger_to_string(k), v))
+//             .collect();
+//         string_map.serialize(serializer)
+//     }
+
+//     pub fn deserialize<'de, D>(
+//         deserializer: D,
+//     ) -> Result<BTreeMap<SecretAlertTrigger, SecretAlertEntry>, D::Error>
+//     where
+//         D: Deserializer<'de>,
+//     {
+//         let string_map: BTreeMap<String, SecretAlertEntry> = BTreeMap::deserialize(deserializer)?;
+//         let map = string_map
+//             .into_iter()
+//             .filter_map(|(k, v)| string_to_trigger(&k).map(|trigger| (trigger, v)))
+//             .collect();
+//         Ok(map)
+//     }
+
+//     fn trigger_to_string(trigger: &SecretAlertTrigger) -> String {
+//         match trigger {
+//             SecretAlertTrigger::Bits(amount) => format!("bits_{}", amount),
+//             SecretAlertTrigger::Donation(amount) => format!("donation_{}", amount),
+//             SecretAlertTrigger::GiftSubscription(count) => format!("gift_sub_{}", count),
+//             SecretAlertTrigger::Subscription(tier) => format!("subscription_{:?}", tier),
+//             SecretAlertTrigger::Raid => "raid".to_string(),
+//         }
+//     }
+
+//     fn string_to_trigger(s: &str) -> Option<SecretAlertTrigger> {
+//         if s == "raid" {
+//             return Some(SecretAlertTrigger::Raid);
+//         }
+
+//         if let Some(amount_str) = s.strip_prefix("bits_") {
+//             if let Ok(amount) = amount_str.parse::<u32>() {
+//                 return Some(SecretAlertTrigger::Bits(amount));
+//             }
+//         }
+
+//         if let Some(amount_str) = s.strip_prefix("donation_") {
+//             if let Ok(amount) = amount_str.parse::<u64>() {
+//                 return Some(SecretAlertTrigger::Donation(amount));
+//             }
+//         }
+
+//         if let Some(count_str) = s.strip_prefix("gift_sub_") {
+//             if let Ok(count) = count_str.parse::<u32>() {
+//                 return Some(SecretAlertTrigger::GiftSubscription(count));
+//             }
+//         }
+
+//         if let Some(tier_str) = s.strip_prefix("subscription_") {
+//             match tier_str {
+//                 "Prime" => Some(SecretAlertTrigger::Subscription(
+//                     crate::types::secret_alert::TwitchSubscriptionTier::Prime,
+//                 )),
+//                 "Tier1" => Some(SecretAlertTrigger::Subscription(
+//                     crate::types::secret_alert::TwitchSubscriptionTier::Tier1,
+//                 )),
+//                 "Tier2" => Some(SecretAlertTrigger::Subscription(
+//                     crate::types::secret_alert::TwitchSubscriptionTier::Tier2,
+//                 )),
+//                 "Tier3" => Some(SecretAlertTrigger::Subscription(
+//                     crate::types::secret_alert::TwitchSubscriptionTier::Tier3,
+//                 )),
+//                 _ => None,
+//             }
+//         } else {
+//             None
+//         }
+//     }
+// }

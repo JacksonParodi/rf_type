@@ -1,7 +1,7 @@
 use crate::types::secret_alert::AlertMedia;
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Clone, Debug)]
 pub struct SecretAlertEntry {
     /// the media filename with no extension
     pub media: AlertMedia,
