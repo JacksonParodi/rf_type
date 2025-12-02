@@ -24,7 +24,7 @@ impl Serialize for SecretAlertManager {
             .iter()
             .map(|(k, v)| {
                 let index: usize = self.map.keys().position(|key| key == k).unwrap_or_default();
-                let k_string = format!("{}_{}", index + 1, k.to_string());
+                let k_string = format!("{:03}_{}", index + 1, k.to_string());
                 (k_string, v)
             })
             .collect();
