@@ -19,8 +19,15 @@ impl Serialize for SecretAlertManager {
     where
         S: Serializer,
     {
-        let string_map: BTreeMap<String, &SecretAlertEntry> =
-            self.map.iter().map(|(k, v)| (k.to_string(), v)).collect();
+        let string_map: BTreeMap<String, &SecretAlertEntry> = self
+            .map
+            .iter()
+            .map(|(k, v)| {
+                let index: usize = self.map.keys().position(|key| key == k).unwrap_or_default();
+                let k_string = format!("{}_{}", index + 1, k.to_string());
+                (k_string, v)
+            })
+            .collect();
         string_map.serialize(serializer)
     }
 }
@@ -34,7 +41,9 @@ impl<'de> Deserialize<'de> for SecretAlertManager {
         let map = string_map
             .into_iter()
             .filter_map(|(k, v)| {
-                SecretAlertTrigger::from_str(&k)
+                let trimmed_string = k.splitn(2, '_').nth(1).unwrap_or(&k).to_string();
+
+                SecretAlertTrigger::from_str(&trimmed_string)
                     .ok()
                     .map(|trigger| (trigger, v))
             })
